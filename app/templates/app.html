@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block body %}
 <header class="topbar">
-  <a href="/" class="brand">{% include "partials/logo.html" %}Calendário</a>
+  <a href="/" class="brand">{% include "partials/logo.html" %}Calendário<span class="beta-badge" title="Versão beta: algumas coisas ainda podem mudar">Beta</span></a>
   <div class="user-menu">
+    {% if user.is_admin %}<a class="btn btn-ghost btn-sm" href="/admin/feedbacks">Ver feedbacks</a>{% endif %}
     <span class="user-email">{{ user.email }}</span>
     <form hx-post="/logout" action="/logout" method="post">
       <button class="btn btn-ghost btn-sm">Sair</button>
@@ -10,5 +11,23 @@
   </div>
 </header>
 {% block main %}{% endblock %}
+<footer class="site-foot">
+  <div class="card feedback-card">
+    <div class="feedback-intro">
+      <h2 class="card-title">Deixe seu feedback</h2>
+      <p class="muted">O Calendário está em <strong>versão beta</strong>. Encontrou um problema ou tem uma ideia? Conte pra gente.</p>
+    </div>
+    <form class="feedback-form" hx-post="/feedback" hx-target="#feedback-msg"
+          hx-on::after-request="if (event.detail.xhr.status === 200) this.reset()">
+      <input type="hidden" name="page" value="{{ request.url.path }}">
+      <textarea class="input" name="message" rows="3" maxlength="2000" required
+                placeholder="O que está funcionando bem? O que poderia melhorar?" aria-label="Seu feedback"></textarea>
+      <div class="feedback-actions">
+        <div id="feedback-msg"></div>
+        <button class="btn btn-primary">Enviar feedback</button>
+      </div>
+    </form>
+  </div>
+</footer>
 <aside id="panel" class="panel" aria-live="polite"></aside>
 {% endblock %}

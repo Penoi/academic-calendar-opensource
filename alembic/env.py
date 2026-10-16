@@ -57,6 +57,10 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
+    if connection.dialect.name == "sqlite":
+        # o batch mode recria tabelas (copia, apaga, renomeia); com FKs ligadas o DROP falha
+        connection.exec_driver_sql("PRAGMA foreign_keys=OFF")
+        connection.commit()  # fecha o autobegin; senão o Alembic não faz commit da migration
     context.configure(connection=connection, target_metadata=target_metadata, render_as_batch=True)
 
     with context.begin_transaction():

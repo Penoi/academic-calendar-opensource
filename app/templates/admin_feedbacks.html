@@ -1,0 +1,24 @@
+{% extends "app.html" %}
+{% block title %}Feedbacks · Calendário{% endblock %}
+{% block main %}
+<div class="subject-wrap narrow-wide">
+  <a href="/" class="back">← Calendário</a>
+  <section class="card">
+    <h2 class="card-title">Feedbacks dos usuários <span class="count-pill">{{ feedbacks | length }}</span></h2>
+    <ul class="fb-list">
+      {% for fb in feedbacks %}
+      <li class="fb">
+        <div class="fb-meta">
+          <strong>{{ fb.user.email }}</strong>
+          <time datetime="{{ fb.created_at.isoformat() }}">{{ fb.created_at | short_dt }}</time>
+          {% if fb.page %}<code class="fb-page">{{ fb.page }}</code>{% endif %}
+        </div>
+        <p class="fb-msg">{{ fb.message }}</p>
+      </li>
+      {% else %}
+      <li class="empty">Nenhum feedback ainda.</li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+{% endblock %}

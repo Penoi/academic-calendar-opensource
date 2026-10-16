@@ -10,6 +10,10 @@ class NotFound(AppError):
     status_code = 404
 
 
+class Forbidden(AppError):
+    status_code = 403
+
+
 class Conflict(AppError):
     status_code = 409
 

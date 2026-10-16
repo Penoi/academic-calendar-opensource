@@ -3,7 +3,7 @@
 {% block body %}
 <main class="auth-wrap">
   <div class="card auth-card">
-    <div class="brand">{% include "partials/logo.html" %}Calendário</div>
+    <div class="brand">{% include "partials/logo.html" %}Calendário<span class="beta-badge">Beta</span></div>
     <h1>Entre para ver suas matérias</h1>
     <form action="/login" method="post" hx-post="/login" hx-target="#form-errors">
       <div class="field">

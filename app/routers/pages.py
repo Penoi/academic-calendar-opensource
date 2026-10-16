@@ -7,15 +7,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.cookies import clear_session_cookie, set_session_cookie
 from app.db import get_db
-from app.deps import get_current_user, get_optional_user
+from app.deps import get_admin_user, get_current_user, get_optional_user
 from app.errors import AppError, Conflict
 from app.models import User
 from app.ratelimit import LOGIN_LIMIT, limiter
-from app.schemas import Credentials, EventIn, SubjectIn, friendly_error, normalize_code
+from app.schemas import Credentials, EventIn, FeedbackIn, SubjectIn, friendly_error, normalize_code
 from app.security import SESSION_COOKIE
 from app.services import auth as auth_service
 from app.services import calendar as calendar_service
 from app.services import events as event_service
+from app.services import feedback as feedback_service
 from app.services import subjects as subject_service
 from app.templating import alert, render
 
@@ -342,3 +343,22 @@ async def delete_event(event_id: int, db: AsyncSession = Depends(get_db), user: 
 async def restore_event(audit_id: int, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
     event = await event_service.restore(db, user, audit_id)
     return alert(f"“{event.title}” foi restaurado.", 200, kind="ok", headers=EVENTS_CHANGED)
+
+
+# ---------------------------------------------------------------- feedback
+
+@router.post("/feedback")
+async def send_feedback(request: Request, message: str = Form(""), page: str = Form(""),
+                        db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    try:
+        data = FeedbackIn(message=message)
+    except ValidationError as exc:
+        return alert(friendly_error(exc))
+    await feedback_service.create(db, user, data, page)
+    return alert("Obrigado! Seu feedback foi enviado.", 200, kind="ok")
+
+
+@router.get("/admin/feedbacks", response_class=HTMLResponse)
+async def admin_feedbacks(request: Request, db: AsyncSession = Depends(get_db),
+                          user: User = Depends(get_admin_user)):
+    return render(request, "admin_feedbacks.html", {"user": user, "feedbacks": await feedback_service.list_all(db)})

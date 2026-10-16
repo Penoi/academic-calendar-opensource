@@ -27,6 +27,18 @@ class UserOut(BaseModel):
     email: str
 
 
+class FeedbackIn(BaseModel):
+    message: str = Field(min_length=1, max_length=2000)
+
+    @field_validator("message")
+    @classmethod
+    def _message(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("feedback vazio")
+        return v
+
+
 class SubjectIn(BaseModel):
     code: str
     name: str = Field(min_length=1, max_length=100)
@@ -139,6 +151,7 @@ FIELD_MESSAGES = {
     "start_time": "Horário de início inválido.",
     "end_time": "Horário de fim inválido.",
     "version": "Versão do evento ausente.",
+    "message": "Escreva seu feedback (até 2000 caracteres).",
 }
 
 

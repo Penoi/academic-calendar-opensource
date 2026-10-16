@@ -24,6 +24,16 @@ uv run alembic revision --autogenerate -m "descrição"
 uv run alembic upgrade head
 ```
 
+## Administradores
+
+Usuários com `is_admin` veem o link **Ver feedbacks** no topo (`/admin/feedbacks`), com tudo o que
+foi enviado pelo formulário de feedback no rodapé. Para promover (ou rebaixar) alguém já cadastrado:
+
+```bash
+uv run python -m app.admin pessoa@exemplo.com            # vira admin
+uv run python -m app.admin pessoa@exemplo.com --remove   # deixa de ser admin
+```
+
 ## Configuração (`.env`)
 
 | Variável | Padrão | |

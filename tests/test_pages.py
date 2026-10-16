@@ -1,4 +1,9 @@
 """Fluxo das páginas HTML/HTMX, como o navegador faz."""
+from sqlalchemy import update
+
+from app.db import get_db
+from app.main import app
+from app.models import User
 from app.security import CSRF_HEADER, SESSION_COOKIE, csrf_token_for
 from tests.conftest import make_client
 
@@ -90,3 +95,22 @@ async def test_missing_subject_page_is_404(ana):
 
 async def test_bad_month_params_fall_back_to_today(ana):
     assert (await ana.get("/?y=2026&m=13")).status_code == 200
+
+
+async def test_feedback_and_admin(ana, bruno, db):
+    resp = await ana.post("/feedback", data={"message": "   ", "page": "/"}, headers=HX)
+    assert resp.status_code == 422 and "feedback" in resp.text
+    resp = await ana.post("/feedback", data={"message": "Adorei o app!", "page": "/s/math01"}, headers=HX)
+    assert resp.status_code == 200 and "Obrigado" in resp.text
+
+    home = await ana.get("/")
+    assert "Beta" in home.text and "Deixe seu feedback" in home.text and "/admin/feedbacks" not in home.text
+    assert (await ana.get("/admin/feedbacks")).status_code == 403
+
+    async for s in app.dependency_overrides[get_db]():
+        await s.execute(update(User).where(User.email == "bruno@example.com").values(is_admin=True))
+        await s.commit()
+
+    assert "/admin/feedbacks" in (await bruno.get("/")).text
+    page = await bruno.get("/admin/feedbacks")
+    assert page.status_code == 200 and "Adorei o app!" in page.text and "ana@example.com" in page.text
