@@ -1,0 +1,10 @@
+{% for s in results %}
+<button class="result" type="button" style="--c: {{ s.color }}"
+        hx-post="/partials/subscriptions" hx-vals='{"code": "{{ s.code }}"}' hx-target="#sub-msg">
+  <span class="dot"></span>
+  <span><strong>#{{ s.code }}</strong><small>{{ s.name }}</small></span>
+  {% if s.id in subscribed %}<span class="tag-in">inscrito</span>{% endif %}
+</button>
+{% else %}
+{% if q %}<a class="result" href="/subjects/new?code={{ q | urlencode }}"><span>Nenhuma matéria encontrada. <strong>Criar #{{ q }}?</strong></span></a>{% endif %}
+{% endfor %}

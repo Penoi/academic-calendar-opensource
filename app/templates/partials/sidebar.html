@@ -1,0 +1,39 @@
+<aside id="sidebar" class="sidebar" hx-get="/partials/sidebar" hx-trigger="subscriptionsChanged from:body" hx-swap="outerHTML">
+  <div class="card">
+    <h2 class="card-title">Adicionar matéria</h2>
+    <div class="add-box">
+      <form class="add-form" hx-post="/partials/subscriptions" hx-target="#sub-msg"
+            hx-on::after-request="if (event.detail.xhr.status === 204) this.reset()">
+        <div class="code-input"><span>#</span>
+          <input class="input" name="code" placeholder="math01" autocomplete="off" aria-label="Código da matéria"
+                 hx-get="/partials/search" hx-trigger="input changed delay:250ms" hx-target="#search-results">
+        </div>
+        <button class="btn btn-primary">Ativar</button>
+      </form>
+      <div id="search-results" class="search-results"></div>
+    </div>
+    <div id="sub-msg"></div>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">Minhas matérias</h2>
+    <div class="subs">
+      {% for sub in subs %}
+      <div class="sub{% if not sub.active %} is-off{% endif %}" style="--c: {{ sub.subject.color }}">
+        <span class="dot"></span>
+        <a class="sub-name" href="/s/{{ sub.subject.code }}">
+          <strong>#{{ sub.subject.code }}</strong>
+          <small>{{ sub.subject.name }}</small>
+        </a>
+        <button class="switch" role="switch" aria-checked="{{ 'true' if sub.active else 'false' }}"
+                aria-label="{{ 'Desativar' if sub.active else 'Ativar' }} #{{ sub.subject.code }}"
+                title="{{ 'Esconder do calendário' if sub.active else 'Mostrar no calendário' }}"
+                hx-post="/partials/subscriptions/{{ sub.subject_id }}/toggle"></button>
+      </div>
+      {% else %}
+      <p class="empty">Nenhuma matéria ainda.<br>Digite um código acima, como <strong>#math01</strong>.</p>
+      {% endfor %}
+    </div>
+    <div class="sub-foot"><a class="link-sm" href="/subjects/new">+ Criar nova matéria</a></div>
+  </div>
+</aside>

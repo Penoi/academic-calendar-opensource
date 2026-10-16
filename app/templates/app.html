@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="topbar">
+  <a href="/" class="brand">{% include "partials/logo.html" %}Calendário</a>
+  <div class="user-menu">
+    <span class="user-email">{{ user.email }}</span>
+    <form hx-post="/logout" action="/logout" method="post">
+      <button class="btn btn-ghost btn-sm">Sair</button>
+    </form>
+  </div>
+</header>
+{% block main %}{% endblock %}
+<aside id="panel" class="panel" aria-live="polite"></aside>
+{% endblock %}

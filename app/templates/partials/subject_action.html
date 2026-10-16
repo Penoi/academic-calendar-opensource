@@ -1,0 +1,14 @@
+{% if sub and sub.active %}
+  <span class="status-pill on">● No seu calendário</span>
+  <button class="btn btn-sm" hx-post="/partials/subscriptions/{{ subject.id }}/toggle">Esconder</button>
+{% elif sub %}
+  <span class="status-pill">Escondida do calendário</span>
+  <button class="btn btn-primary btn-sm" hx-post="/partials/subscriptions/{{ subject.id }}/toggle">Mostrar</button>
+{% else %}
+  <button class="btn btn-primary" hx-post="/partials/subscriptions" hx-vals='{"code": "{{ subject.code }}"}'>Ativar no meu calendário</button>
+{% endif %}
+{% if sub %}
+  <button class="btn btn-ghost btn-sm" hx-delete="/partials/subscriptions/{{ subject.id }}"
+          hx-confirm="Sair da #{{ subject.code }}? Os eventos somem do seu calendário.">Sair da matéria</button>
+{% endif %}
+<span class="muted" style="font-size:13px">{{ subscribers }} inscrito{{ 's' if subscribers != 1 }}</span>

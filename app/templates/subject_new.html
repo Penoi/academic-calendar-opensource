@@ -1,0 +1,34 @@
+{% extends "app.html" %}
+{% block title %}Nova matéria · Calendário{% endblock %}
+{% block main %}
+<div class="subject-wrap narrow">
+  <a href="/" class="back">← Calendário</a>
+  <div class="card">
+    <h2 class="card-title">Nova matéria</h2>
+    <form hx-post="/subjects" hx-target="#form-errors">
+      <div class="field">
+        <label for="code">Código</label>
+        <div class="code-input"><span>#</span>
+          <input id="code" class="input" name="code" value="{{ code }}" placeholder="math01" required
+                 pattern="#?[A-Za-z0-9_\-]{2,20}" autocomplete="off" {% if not code %}autofocus{% endif %}>
+        </div>
+      </div>
+      <p class="hint">De 2 a 20 caracteres: letras, números, - ou _. É o que as pessoas vão digitar para entrar.</p>
+      <div class="field">
+        <label for="name">Nome</label>
+        <input id="name" name="name" placeholder="Matemática" maxlength="100" required {% if code %}autofocus{% endif %}>
+      </div>
+      <div class="field">
+        <label>Cor</label>
+        <div class="color-grid">
+          {% for c in colors %}
+          <label style="--c: {{ c }}"><input type="radio" name="color" value="{{ c }}" {% if loop.first %}checked{% endif %}><span></span></label>
+          {% endfor %}
+        </div>
+      </div>
+      <div id="form-errors"></div>
+      <button class="btn btn-primary btn-block">Criar e ativar no meu calendário</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

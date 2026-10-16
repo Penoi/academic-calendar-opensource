@@ -1,0 +1,33 @@
+<div class="panel-inner" style="--c: {{ event.subject.color }}">
+  <header class="panel-head">
+    <a class="tag" href="/s/{{ event.subject.code }}"><span class="dot"></span>#{{ event.subject.code }}</a>
+    <button class="icon-btn" data-close-panel aria-label="Fechar">×</button>
+  </header>
+  {% if conflict %}<div class="alert alert-warn">{{ conflict }}</div>{% endif %}
+  {% if saved %}<div class="alert alert-ok">Alterações salvas.</div>{% endif %}
+
+  <h2 class="panel-title">{{ event.title }}</h2>
+  <p class="when">{{ event | when }}</p>
+  {% if event.description %}<p class="desc">{{ event.description }}</p>{% endif %}
+  <p class="meta">Última edição por {{ event.editor.email }} em {{ event.updated_at | short_dt }}</p>
+
+  <div class="panel-actions">
+    <button class="btn" onclick="this.closest('.panel-inner').querySelector('.edit-box').hidden = false; this.hidden = true">Editar</button>
+    <button class="btn btn-danger" hx-delete="/events/{{ event.id }}" hx-target="#panel"
+            hx-confirm="Apagar “{{ event.title }}” para todos da #{{ event.subject.code }}?">Apagar</button>
+  </div>
+
+  <div class="edit-box" hidden>
+    <form hx-patch="/events/{{ event.id }}" hx-target="find .form-errors">
+      <input type="hidden" name="version" value="{{ event.version }}">
+      {% set ev = event %}
+      {% include "partials/event_fields.html" %}
+      <div class="form-errors"></div>
+      <div class="panel-actions">
+        <button class="btn btn-primary">Salvar</button>
+        <button type="button" class="btn btn-ghost"
+                onclick="const b = this.closest('.panel-inner'); b.querySelector('.edit-box').hidden = true; b.querySelector('.panel-actions .btn').hidden = false">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>

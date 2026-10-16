@@ -1,0 +1,42 @@
+{% set prev_y, prev_m = month.prev %}
+{% set next_y, next_m = month.next %}
+<section id="month" class="card cal"
+         hx-get="/partials/month?y={{ month.year }}&m={{ month.month }}"
+         hx-trigger="eventsChanged from:body, subscriptionsChanged from:body" hx-swap="outerHTML">
+  <header class="cal-head">
+    <h1 class="cal-title">{{ month.title.split(' ')[0] }} <span>{{ month.year }}</span></h1>
+    <nav class="cal-nav">
+      <button class="icon-btn" aria-label="Mês anterior"
+              hx-get="/partials/month?y={{ prev_y }}&m={{ prev_m }}" hx-target="#month" hx-swap="outerHTML"
+              hx-push-url="/?y={{ prev_y }}&m={{ prev_m }}">‹</button>
+      <button class="btn btn-sm"
+              hx-get="/partials/month?y={{ today.year }}&m={{ today.month }}" hx-target="#month" hx-swap="outerHTML"
+              hx-push-url="/">Hoje</button>
+      <button class="icon-btn" aria-label="Próximo mês"
+              hx-get="/partials/month?y={{ next_y }}&m={{ next_m }}" hx-target="#month" hx-swap="outerHTML"
+              hx-push-url="/?y={{ next_y }}&m={{ next_m }}">›</button>
+    </nav>
+  </header>
+
+  <div class="cal-weekdays">{% for w in WEEKDAYS %}<div>{{ w }}</div>{% endfor %}</div>
+  <div class="cal-grid">
+    {% for week in month.weeks %}{% for day in week %}
+    <div class="day{% if not day.in_month %} is-out{% endif %}{% if day.is_today %} is-today{% endif %}"
+         role="button" tabindex="0" aria-label="{{ day.date | long_date }}"
+         hx-get="/partials/day?d={{ day.date.isoformat() }}" hx-target="#panel"
+         hx-trigger="click, keyup[key=='Enter']">
+      <span class="day-num">{{ day.date.day }}</span>
+      <div class="day-events">
+        {% for ev in day.events[:3] %}
+        <button class="chip" style="--c: {{ ev.subject.color }}" title="#{{ ev.subject.code }} · {{ ev.title }}"
+                hx-get="/partials/events/{{ ev.id }}" hx-target="#panel" hx-trigger="click consume">
+          {% if not ev.all_day %}<time>{{ ev.starts_at | hm }}</time>{% endif %}<span>{{ ev.title }}</span>
+        </button>
+        {% endfor %}
+        {% if day.events | length > 3 %}<span class="more">+{{ day.events | length - 3 }} mais</span>{% endif %}
+      </div>
+      {% if day.events %}<div class="dots">{% for ev in day.events[:4] %}<i style="--c: {{ ev.subject.color }}"></i>{% endfor %}</div>{% endif %}
+    </div>
+    {% endfor %}{% endfor %}
+  </div>
+</section>

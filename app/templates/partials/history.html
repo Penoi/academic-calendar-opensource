@@ -1,0 +1,21 @@
+<ul class="history">
+  {% for h in entries %}
+  {% set snap = h.after or h.before %}
+  <li class="h-{{ h.action | lower }}">
+    <span class="who">{{ h.user.email.split('@')[0] }}</span>
+    {% if h.action == "CREATE" %}criou <strong>{{ snap.title }}</strong> ({{ snap | snapshot_when }})
+    {% elif h.action == "UPDATE" %}alterou <strong>{{ snap.title }}</strong>
+      {% set changes = audit_changes(h) %}
+      {% if changes %}<ul class="changes">{% for c in changes %}<li>{{ c }}</li>{% endfor %}</ul>{% endif %}
+    {% elif h.action == "DELETE" %}apagou <strong>{{ snap.title }}</strong> ({{ snap | snapshot_when }})
+    {% elif h.action == "RESTORE" %}restaurou <strong>{{ snap.title }}</strong>
+    {% endif %}
+    <time>{{ h.created_at | short_dt }}</time>
+    {% if h.action == "DELETE" and h.event_id not in restored %}
+    <button class="btn btn-sm restore" hx-post="/audit/{{ h.id }}/restore" hx-target="#history-msg">↺ Restaurar</button>
+    {% endif %}
+  </li>
+  {% else %}
+  <li class="empty" style="padding:18px 0">Nenhuma alteração ainda.</li>
+  {% endfor %}
+</ul>

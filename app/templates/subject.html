@@ -1,0 +1,47 @@
+{% extends "app.html" %}
+{% block title %}#{{ subject.code }} · Calendário{% endblock %}
+{% block main %}
+<div class="subject-wrap" style="--c: {{ subject.color }}">
+  <a href="/" class="back">← Calendário</a>
+  <section class="card hero">
+    <div class="hero-mark">{{ subject.name[:1] | upper }}</div>
+    <div>
+      <h1>#{{ subject.code }}</h1>
+      <p>{{ subject.name }}</p>
+    </div>
+    <div id="subject-action" class="hero-action" hx-get="/partials/s/{{ subject.code }}/action"
+         hx-trigger="subscriptionsChanged from:body">
+      {% include "partials/subject_action.html" %}
+    </div>
+  </section>
+
+  <div class="subject-grid">
+    <section class="card">
+      <div class="new-event">
+        <h2 class="card-title">Novo evento</h2>
+        {% set form_action = "/s/" ~ subject.code ~ "/events" %}
+        <form hx-post="{{ form_action }}" hx-target="find .form-errors"
+              hx-on::after-request="if (event.detail.xhr.status === 200) this.reset()">
+          {% set ev = none %}
+          {% set default_date = today %}
+          {% include "partials/event_fields.html" %}
+          <div class="form-errors"></div>
+          <button class="btn btn-primary">Adicionar evento</button>
+        </form>
+      </div>
+      <h2 class="card-title">Eventos</h2>
+      <div id="subject-events" hx-get="/partials/s/{{ subject.code }}/events" hx-trigger="eventsChanged from:body">
+        {% include "partials/subject_events.html" %}
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">Histórico</h2>
+      <div id="history-msg"></div>
+      <div id="history" hx-get="/partials/s/{{ subject.code }}/history" hx-trigger="eventsChanged from:body">
+        {% include "partials/history.html" %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

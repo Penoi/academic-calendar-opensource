@@ -1,0 +1,39 @@
+<div class="panel-inner">
+  <header class="panel-head">
+    <h2 class="panel-title" style="margin:0">{{ day | long_date }}</h2>
+    <button class="icon-btn" data-close-panel aria-label="Fechar">×</button>
+  </header>
+
+  <div class="day-list">
+    {% for ev in events %}
+    <button class="day-item" style="--c: {{ ev.subject.color }}" hx-get="/partials/events/{{ ev.id }}" hx-target="#panel">
+      <span class="dot"></span>
+      <span><strong>{{ ev.title }}</strong>
+        <small>#{{ ev.subject.code }} · {% if ev.all_day %}Dia inteiro{% else %}{{ ev.starts_at | hm }}{% if ev.ends_at %}–{{ ev.ends_at | hm }}{% endif %}{% endif %}</small></span>
+    </button>
+    {% else %}
+    <p class="empty">Nada marcado neste dia.</p>
+    {% endfor %}
+  </div>
+
+  <div class="edit-box">
+    <h3 class="card-title">Novo evento</h3>
+    {% if subs %}
+    <form hx-post="/events" hx-target="find .form-errors">
+      <div class="field">
+        <label>Matéria</label>
+        <select name="subject_code" required>
+          {% for s in subs %}<option value="{{ s.subject.code }}">#{{ s.subject.code }} · {{ s.subject.name }}</option>{% endfor %}
+        </select>
+      </div>
+      {% set ev = none %}
+      {% set default_date = day %}
+      {% include "partials/event_fields.html" %}
+      <div class="form-errors"></div>
+      <button class="btn btn-primary">Adicionar</button>
+    </form>
+    {% else %}
+    <p class="empty">Ative uma matéria para poder adicionar eventos.</p>
+    {% endif %}
+  </div>
+</div>

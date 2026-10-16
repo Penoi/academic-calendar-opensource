@@ -1,0 +1,18 @@
+{% macro ev_row(ev) %}
+<button class="ev" hx-get="/partials/events/{{ ev.id }}" hx-target="#panel">
+  <span class="ev-date"><b>{{ (ev.starts_at | local_date)[8:] }}</b><small>{{ ev.starts_at | month_abbr }}</small></span>
+  <span class="ev-body">
+    <strong>{{ ev.title }}</strong>
+    <small>{{ ev | when }}</small>
+  </span>
+</button>
+{% endmacro %}
+<div class="ev-list">
+  {% for ev in upcoming %}{{ ev_row(ev) }}{% else %}<p class="empty">Nenhum evento futuro.</p>{% endfor %}
+</div>
+{% if past %}
+<details class="past-toggle">
+  <summary>Eventos passados ({{ past | length }})</summary>
+  <div class="ev-list">{% for ev in past %}{{ ev_row(ev) }}{% endfor %}</div>
+</details>
+{% endif %}

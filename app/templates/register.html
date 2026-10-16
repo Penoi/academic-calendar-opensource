@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Criar conta · Calendário{% endblock %}
+{% block body %}
+<main class="auth-wrap">
+  <div class="card auth-card">
+    <div class="brand">{% include "partials/logo.html" %}Calendário</div>
+    <h1>Crie sua conta</h1>
+    <form action="/register" method="post" hx-post="/register" hx-target="#form-errors">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required value="{{ email or '' }}" autofocus>
+      </div>
+      <div class="field">
+        <label for="password">Senha</label>
+        <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+      </div>
+      <p class="hint">Mínimo de 8 caracteres.</p>
+      <div class="field">
+        <label for="password2">Repita a senha</label>
+        <input id="password2" name="password2" type="password" autocomplete="new-password" minlength="8" required>
+      </div>
+      <div id="form-errors">{% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}</div>
+      <button class="btn btn-primary btn-block">Criar conta</button>
+    </form>
+    <p class="auth-foot">Já tem conta? <a href="/login">Entrar</a></p>
+  </div>
+</main>
+{% endblock %}

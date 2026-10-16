@@ -1,0 +1,8 @@
+{% extends "app.html" %}
+{% block title %}{{ month.title }} · Calendário{% endblock %}
+{% block main %}
+<div class="layout">
+  {% include "partials/sidebar.html" %}
+  <main>{% include "partials/month.html" %}</main>
+</div>
+{% endblock %}

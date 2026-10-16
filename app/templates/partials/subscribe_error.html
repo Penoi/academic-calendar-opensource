@@ -1,0 +1,4 @@
+<div class="alert alert-error" role="alert">
+  {{ message }}
+  {% if code %}<a href="/subjects/new?code={{ code | urlencode }}">Criar #{{ code }}</a>{% endif %}
+</div>

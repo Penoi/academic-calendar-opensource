@@ -1,0 +1,25 @@
+{# usado para criar e editar; `ev` é o evento (ou none) e `default_date` a data sugerida #}
+<div class="field">
+  <label>Título</label>
+  <input name="title" maxlength="200" required placeholder="Prova 1" value="{{ ev.title if ev else '' }}">
+</div>
+<div class="row-3">
+  <div class="field">
+    <label>Data</label>
+    <input name="date" type="date" required
+           value="{{ (ev.starts_at | local_date) if ev else default_date.isoformat() }}">
+  </div>
+  <div class="field">
+    <label>Início</label>
+    <input name="start_time" type="time" value="{{ (ev.starts_at | hm) if ev and not ev.all_day else '' }}">
+  </div>
+  <div class="field">
+    <label>Fim</label>
+    <input name="end_time" type="time" value="{{ (ev.ends_at | hm) if ev and ev.ends_at else '' }}">
+  </div>
+</div>
+<p class="hint">Deixe os horários vazios para um evento de dia inteiro.</p>
+<div class="field">
+  <label>Descrição</label>
+  <textarea name="description" maxlength="2000" placeholder="Capítulos 3 a 5, trazer calculadora…">{{ ev.description or '' if ev else '' }}</textarea>
+</div>
