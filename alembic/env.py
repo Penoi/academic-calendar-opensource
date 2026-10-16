@@ -1,15 +1,13 @@
 import asyncio
 from logging.config import fileConfig
 
-from sqlalchemy import pool
 from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
 from app import models  # noqa: F401  (registra as tabelas)
 from app.config import settings
-from app.db import Base
+from app.db import Base, make_engine, normalize_url
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -25,7 +23,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
-config.set_main_option("sqlalchemy.url", settings.database_url)
+# a URL vem do .env / DATABASE_URL (não do alembic.ini), normalizada igual ao app
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -45,7 +43,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = normalize_url(settings.database_url)[0].render_as_string(hide_password=False)
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -71,11 +69,7 @@ async def run_async_migrations() -> None:
 
     """
 
-    connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    connectable = make_engine(settings.database_url)
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)

@@ -3,7 +3,6 @@ name = "calendario"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
-    "aiosqlite>=0.22.1",
     "alembic>=1.20.0",
     "argon2-cffi>=25.1.0",
     "asyncpg>=0.32.0",
@@ -20,6 +19,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "aiosqlite>=0.22.1",
     "httpx>=0.28.1",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
